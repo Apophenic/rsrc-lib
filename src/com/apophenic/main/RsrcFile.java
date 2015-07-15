@@ -48,7 +48,6 @@ import java.util.logging.Logger;
  * will list all resources of that type. See {@link Resource}
  * for how each resource entry is structured.
  */
-@SuppressWarnings("unused")
 public class RsrcFile
 {
     /** .rsrc file */
