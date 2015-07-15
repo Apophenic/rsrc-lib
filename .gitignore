@@ -8,3 +8,5 @@ DeviceImages.rsrc
 src/com/apophenic/test
 1.png
 rsrc-lib.iml
+Program.scala
+src/doc

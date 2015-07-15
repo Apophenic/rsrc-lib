@@ -1,4 +1,4 @@
-package com.apophenic.main;
+package com.apophenic.rsrclib;
 
 public enum ResourceType
 {

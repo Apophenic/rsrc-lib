@@ -23,7 +23,7 @@
 //   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //   THE SOFTWARE.
 
-package com.apophenic.main;
+package com.apophenic.rsrclib;
 
 import java.io.*;
 import java.nio.ByteBuffer;

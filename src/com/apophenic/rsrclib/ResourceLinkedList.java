@@ -1,4 +1,4 @@
-package com.apophenic.main;
+package com.apophenic.rsrclib;
 
 import com.sun.javafx.scene.control.skin.VirtualFlow.ArrayLinkedList;
 
@@ -23,6 +23,24 @@ public class ResourceLinkedList extends ArrayLinkedList<Resource>
             }
         }
         return -1;
+    }
+
+    /**
+     * Searches for a {@link Resource} based on its ID
+     * @param o  {@code int} resource's ID
+     * @return  true if this list contains the ID, false otherwise
+     */
+    @Override
+    public boolean contains(Object o)
+    {
+        for (Resource res : this)
+        {
+            if (res.getResourceID() == (int) o)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
