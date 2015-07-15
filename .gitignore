@@ -1,0 +1,10 @@
+# Created by .ignore support plugin (hsz.mobi)
+Images.rsrc
+Images2.rsrc
+out
+.idea
+DeviceIcons.rsrc
+DeviceImages.rsrc
+src/com/apophenic/test
+1.png
+rsrc-lib.iml
