@@ -24,7 +24,7 @@ public class ResourceOffsetRange
         Resource res = list.get(index);
 
         StartOffset = res.getDataOffset();
-        StopOffset = (index < list.size()) ? list.get((index+1)).getDataOffset() : file.getHeaderOffset();
+        StopOffset = (index < list.size() - 1) ? list.get((index + 1)).getDataOffset() : file.getHeaderOffset();
         Length = StopOffset - StartOffset - 0x04;   // Ignore padding bytes between resources
     }
 
