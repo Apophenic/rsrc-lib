@@ -166,12 +166,12 @@ public class RsrcFile
 
         // Create new array from 3 sections: 1) 0x00 to resource start, 2) new resource data, 3) next resource start
         // to end of .rsrc file
-        byte[] newData = new byte[getFileSizeInBytes() + difference];
+        byte[] newData = new byte[_data.length + difference];
         System.arraycopy(_data, 0x00, newData, 0x00, range.StartOffset);
         System.arraycopy(data, 0x00, newData, range.StartOffset, data.length);
         System.arraycopy(_data, range.StopOffset - 0x04,    // Also copy padding bytes between files
                          newData, range.StartOffset + data.length,
-                         getFileSizeInBytes() - range.StopOffset);
+                         _data.length - range.StopOffset);
         _data = newData;
 
         shiftHeaderOffset(difference);
