@@ -121,9 +121,10 @@ public class RsrcFile
 
         while (_pointer < _data.length)
         {
-            ResourceType type = ResourceType.getValue(Arrays.copyOfRange(_data, _pointer, _pointer += 0x04));
+            ResourceType type = ResourceType.getValue(Arrays.copyOfRange(_data, _pointer, _pointer + 0x04));
 
-            _pointer += 0x04;   // Set pointer to first resource
+            // Set pointer to first resource by searching for stop bytes, then decrement back to ID start
+            _pointer = findMatchingOffsetStart(new byte[]{(byte) 0xFF, (byte) 0xFF}, _pointer) - 0x02;
 
             ResourceLinkedList resourceList = new ResourceLinkedList();
 

@@ -1,13 +1,14 @@
 # Created by .ignore support plugin (hsz.mobi)
-Images.rsrc
-Images2.rsrc
+test/Images.rsrc
+test/Images2.rsrc
 out
 .idea
-DeviceIcons.rsrc
-DeviceImages.rsrc
+test/DeviceIcons.rsrc
+test/DeviceImages.rsrc
 src/com/apophenic/test
-1.png
+src/com/apophenic/test/1.png
 rsrc-lib.iml
-Program.scala
+test/Program.scala
 src/doc
 jar/META-INF
+test/iTunes.rsrc
