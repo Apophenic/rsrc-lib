@@ -27,6 +27,7 @@ package com.apophenic.rsrclib;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.nio.file.FileAlreadyExistsException;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -188,18 +189,14 @@ public class RsrcFile
     {
         _headerOffset += difference;
 
-        byte[] headerBytes = new byte[0x0F];
+        byte[] headerBytes = ByteBuffer.allocate(4).putInt(_headerOffset).array();
 
-        byte[] offsetBytes = ByteBuffer.allocate(4).putInt(_headerOffset).array();
-
-        // Build 16 header bytes
-        System.arraycopy(offsetBytes, 0x00, headerBytes, 0x04, offsetBytes.length);
-        offsetBytes[2] -= 0x01;
-        System.arraycopy(offsetBytes, 0x00, headerBytes, 0x08, offsetBytes.length);
-
-        // Update header bytes with new offset bytes
-        System.arraycopy(headerBytes, 0x00, _data, 0x00, headerBytes.length);
-        System.arraycopy(headerBytes, 0x00, _data, _headerOffset, headerBytes.length);
+        // Update header offset bytes with new offset
+        System.arraycopy(headerBytes, 0x00, _data, 0x04, headerBytes.length);
+        System.arraycopy(headerBytes, 0x00, _data, _headerOffset + 0x04, headerBytes.length);
+        headerBytes[2] -= 0x01;
+        System.arraycopy(headerBytes, 0x00, _data, 0x08, headerBytes.length);
+        System.arraycopy(headerBytes, 0x00, _data, _headerOffset + 0x08, headerBytes.length);
     }
 
     /**
@@ -325,7 +322,15 @@ public class RsrcFile
         FileOutputStream fos;
         if(createBackup)
         {
-            Files.copy(_file.toPath(), new File(_file + ".bak").toPath());
+            try
+            {
+                Files.copy(_file.toPath(), new File(_file + ".bak").toPath());
+            }
+            catch (FileAlreadyExistsException e)
+            {
+                // Do nothing
+            }
+
         }
 
         fos = new FileOutputStream(_file);
