@@ -9,7 +9,7 @@ src/com/apophenic/test
 src/com/apophenic/test/1.png
 rsrc-lib.iml
 test/Program.scala
-src/doc
-jar/META-INF
+doc
 test/iTunes.rsrc
 1.png
+test
