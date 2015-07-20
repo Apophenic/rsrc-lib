@@ -1,15 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
-test/Images.rsrc
-test/Images2.rsrc
 out
 .idea
-test/DeviceIcons.rsrc
-test/DeviceImages.rsrc
-src/com/apophenic/test
-src/com/apophenic/test/1.png
-rsrc-lib.iml
-test/Program.scala
-doc
-test/iTunes.rsrc
-1.png
 test
+rsrc-lib.iml
+doc
+res

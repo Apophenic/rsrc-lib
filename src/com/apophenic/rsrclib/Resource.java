@@ -75,6 +75,12 @@ public class Resource
         return _startOffset + 0x104;
     }
 
+    /** Returns this {@code Resource}'s offset location where the resource length in bytes is indicated */
+    public int getLengthOffset()
+    {
+        return getDataOffset() - 0x04;
+    }
+
     /** Returns the resource's data type */
     public ResourceType getType()
     {

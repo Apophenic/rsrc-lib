@@ -40,7 +40,9 @@ import java.util.logging.Logger;
  * <li>-Bytes 4-8 are the offset the header can be found at
  * <li>-The next 256 bytes are usually padding
  * <li>-The next section is the majority of the file, containing
- * all embedded resources, each separated by 4 padding bytes
+ * all embedded resources.
+ * <li>-Each resource is separated by 4 bytes, indicating how many bytes
+ * the next resource has.
  * <li>-The header follows the last resource. So you'll have the final
  * resource file, the 4 padding bytes, then the 16 header bytes.
  * <li>-Then there will be 12-16 unknown bytes separating the first
@@ -147,9 +149,17 @@ public class RsrcFile
      */
     public byte[] loadResourceData(int id, ResourceType type)
     {
-        ResourceOffsetRange range = new ResourceOffsetRange(this, id, type);
+        return loadResourceData(getResourceByID(id, type));
+    }
 
-        return Arrays.copyOfRange(_data, range.StartOffset, range.StopOffset - 0x04);   // Ignore padding
+    /**
+     * Loads the specified resource asset from the .rsrc file
+     * @param res  The resource object to load
+     * @return  {@code byte[]} of data contained within the resource
+     */
+    public byte[] loadResourceData(Resource res)
+    {
+        return Arrays.copyOfRange(_data, res.getDataOffset(), res.getDataOffset() + getResourceLength(res));
     }
 
     /**
@@ -163,21 +173,43 @@ public class RsrcFile
      */
     public void saveResourceData(byte[] data, int id, ResourceType type)
     {
-        ResourceOffsetRange range = new ResourceOffsetRange(this, id, type);
-        int difference = data.length - range.Length;
+        saveResourceData(data, getResourceByID(id, type));
+    }
 
-        // Create new array from 3 sections: 1) 0x00 to resource start, 2) new resource data, 3) next resource start
-        // to end of .rsrc file
+    /**
+     * Saves the specified resource asset, overwriting the resource's
+     * previous data in the given .rsrc file. Note this change will only be made in memory,
+     * call {@link #saveRsrcFile} to update the file.
+     * If the resource ID and type don't exist, do nothing.
+     * @param data  {@code byte[]} data to replace resource with
+     * @param res  Resource to save to file
+     */
+    public void saveResourceData(byte[] data, Resource res)
+    {
+        int origLength = getResourceLength(res);
+        int difference = data.length - origLength;
+
         byte[] newData = new byte[_data.length + difference];
-        System.arraycopy(_data, 0x00, newData, 0x00, range.StartOffset);
-        System.arraycopy(data, 0x00, newData, range.StartOffset, data.length);
-        System.arraycopy(_data, range.StopOffset - 0x04,    // Also copy padding bytes between files
-                         newData, range.StartOffset + data.length,
-                         _data.length - range.StopOffset);
+
+        // Rebuild .rsrc file in 4 sections
+        // 1) 0x00 to saved resource data offset start - 0x04
+        System.arraycopy(_data, 0x00, newData, 0x00, res.getLengthOffset());
+
+        // 2) Next 4 bytes are the resource length (number of bytes)
+        System.arraycopy(getDataLengthBytes(data.length), 0x00, newData, res.getLengthOffset(), 0x04);
+
+        // 3) Bytes from external file, directly replaces old resource
+        System.arraycopy(data, 0x00, newData, res.getDataOffset(), data.length);
+
+        // 4) Next resource start to end of file
+        System.arraycopy(_data, res.getDataOffset() + origLength,
+                newData, res.getDataOffset() + data.length,
+                _data.length - res.getDataOffset() - origLength);
+
         _data = newData;
 
         shiftHeaderOffset(difference);
-        updateHeaderTable(range.StartOffset, difference);
+        updateHeaderTable(res.getDataOffset(), difference);
     }
 
     /**
@@ -269,6 +301,34 @@ public class RsrcFile
     public ResourceType[] getResourceTypesInFile()
     {
         return _headerTable.keySet().toArray(new ResourceType[]{});
+    }
+
+    /**
+     * Determine how many bytes long a given resource is
+     * @param res  The resource's length to get
+     * @return  Resource's length (number of bytes)
+     */
+    public int getResourceLength(Resource res)
+    {
+        byte[] length = Arrays.copyOfRange(_data, res.getLengthOffset(), res.getLengthOffset() + 0x04);
+        return ((length[0] & 0xFF) << 24) | ((length[1] & 0xFF) << 16) |
+                ((length[2] & 0xFF) << 8) | (length[3]) & 0xFF;
+    }
+
+    /**
+     * Returns a length 4 byte array representing
+     * the given resource's number of bytes
+     * @param res  The resource to get length
+     * @return  {@code byte[]} Number of bytes in the resource
+     */
+    public byte[] getResourceLengthBytes(Resource res)
+    {
+        return ByteBuffer.allocate(4).putInt(getResourceLength(res)).array();
+    }
+
+    private byte[] getDataLengthBytes(int datalength)
+    {
+        return ByteBuffer.allocate(4).putInt(datalength).array();
     }
 
     /**
