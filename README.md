@@ -6,12 +6,12 @@ rsrc-lib provides an API for editing and manipulating Mac Resource Files (.rsrc)
 ----------------
 .rsrc files are Mac Resource Files. Their typical structure consists of multiple types of resources with said resource
  files directly embedded into the .rsrc file. File layout is as follows:
- * The first 16 bytes are the header
- * Bytes 4-8 are the offset the header can be found at
- * The next 256 bytes are usually padding
- * The next section is the majority of the file, containing all embedded resources, each separated by 4 padding bytes
- * The header follows the last resource. So you'll have the final resource file, the 4 padding bytes, then the 16
- header bytes.
+ * The first 16 bytes are the header signature
+ * Bytes 4-8 are the offset the actual header (or "footer" in this case) can be found at
+ * The next 256 bytes are padding
+ * The next section is the majority of the file, containing all embedded resources, each separated by 4 bytes
+ representing the length of the following resource.
+ * The header follows the last resource.
  * Then there will be 12-16 unknown bytes separating the first resource type.
  * The resource type will be followed by 8 padding bytes, then will list all resources of that type
  * Each resource entry is 14 bytes, no padding. Format is _3A 99 FF FF 00 03 0D 00 00 00 00 00_, where the first two
